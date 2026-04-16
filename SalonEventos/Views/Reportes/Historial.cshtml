@@ -1,0 +1,74 @@
+@model IEnumerable<SalonEventos.Models.ReporteMensual>
+
+<h2 class="page-title">📁 Historial de reportes mensuales</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Generar" method="post" class="row g-2 align-items-end">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="origen" value="historial" />
+
+            <div class="col-md-3">
+                <label class="form-label">Mes</label>
+                <select class="form-select" name="mes">
+                    @for (int mes = 1; mes <= 12; mes++)
+                    {
+                        <option value="@mes">@mes.ToString("00")</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Año</label>
+                <input class="form-control" type="number" name="anio" value="@DateTime.Now.Year" min="2000" max="2100" />
+            </div>
+
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-danger w-100">Generar PDF mensual</button>
+            </div>
+
+            <div class="col-md-3">
+                <a asp-action="Index" class="btn btn-outline-dark w-100">Volver al mes actual</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay reportes generados todavía.</div>
+}
+else
+{
+    <div class="surface-wrap">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Período</th>
+                <th>Ingresos</th>
+                <th>Gastos</th>
+                <th>Por cobrar</th>
+                <th>Balance</th>
+                <th>Generado</th>
+                <th>PDF</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reporte in Model)
+            {
+                <tr>
+                    <td>@reporte.Mes.ToString("00")/@reporte.Anio</td>
+                    <td>@reporte.Ingresos.ToString("C")</td>
+                    <td>@reporte.Gastos.ToString("C")</td>
+                    <td>@reporte.PorCobrar.ToString("C")</td>
+                    <td>@reporte.Balance.ToString("C")</td>
+                    <td>@reporte.FechaGeneracion.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <a asp-action="Descargar" asp-route-id="@reporte.Id" class="btn btn-sm btn-outline-danger">Descargar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+}

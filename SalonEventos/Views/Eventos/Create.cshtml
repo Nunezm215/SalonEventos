@@ -1,0 +1,112 @@
+﻿@model SalonEventos.Models.Evento
+
+@{
+    ViewData["Title"] = "Crear Evento";
+}
+
+<h2 class="page-title">➕ Crear Evento</h2>
+
+<div class="card">
+<div class="card-body">
+<form asp-controller="Eventos" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!-- 👇 NECESARIO PARA QUE NO ROMPA -->
+    <input type="hidden" asp-for="SaldoPendiente" />
+
+    <div class="mb-3">
+        <label asp-for="NombreCliente"></label>
+        <input asp-for="NombreCliente" class="form-control" />
+        <span asp-validation-for="NombreCliente" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Telefono"></label>
+        <input asp-for="Telefono" class="form-control" />
+        <span asp-validation-for="Telefono" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="TipoEvento"></label>
+        <select asp-for="TipoEvento" class="form-control">
+            <option value="Cumple infantil">Cumple infantil</option>
+            <option value="Adolescente">Adolescente</option>
+            <option value="Bautismo">Bautismo</option>
+            <option value="Reunión familiar">Reunión familiar</option>
+            <option value="Otro">Otro</option>
+        </select>
+        <span asp-validation-for="TipoEvento" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Fecha"></label>
+        <input asp-for="Fecha" type="date" class="form-control" />
+        <span asp-validation-for="Fecha" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Hora"></label>
+        <input asp-for="Hora" type="time" class="form-control" step="60" />
+        <span asp-validation-for="Hora" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CantidadInvitados"></label>
+        <input asp-for="CantidadInvitados" class="form-control" min="0" />
+        <span asp-validation-for="CantidadInvitados" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MontoTotal"></label>
+        <input asp-for="MontoTotal" class="form-control" id="montoTotal" />
+        <span asp-validation-for="MontoTotal" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Senia"></label>
+        <input asp-for="Senia" class="form-control" id="senia" />
+        <span asp-validation-for="Senia" class="text-danger"></span>
+    </div>
+
+    <!-- 👇 SOLO VISUAL -->
+    <div class="mb-3">
+        <label>Saldo Pendiente</label>
+        <input type="text" id="saldo" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Estado"></label>
+        <select asp-for="Estado" class="form-control">
+            <option value="Reservado">Reservado</option>
+            <option value="Señado">Señado</option>
+            <option value="Pagado">Pagado</option>
+        </select>
+        <span asp-validation-for="Estado" class="text-danger"></span>
+    </div>
+
+    <div class="section-actions mb-0">
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a asp-action="Index" class="btn btn-outline-dark">Volver</a>
+    </div>
+</form>
+</div>
+</div>
+
+@section Scripts {
+    <script>
+        function calcularSaldo() {
+            var total = parseFloat(document.getElementById("montoTotal").value) || 0;
+            var senia = parseFloat(document.getElementById("senia").value) || 0;
+
+            var saldo = total - senia;
+
+            document.getElementById("saldo").value = saldo;
+        }
+
+        document.getElementById("montoTotal").addEventListener("input", calcularSaldo);
+        document.getElementById("senia").addEventListener("input", calcularSaldo);
+    </script>
+
+    <partial name="_ValidationScriptsPartial" />
+}

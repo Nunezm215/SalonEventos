@@ -1,0 +1,134 @@
+﻿
+@model IEnumerable<SalonEventos.Models.Evento>
+
+<h2 class="page-title">📅 Calendario de Eventos</h2>
+
+<div id="calendar"></div>
+
+<!-- MODAL -->
+<div id="modalEventos" class="modal-custom">
+    <div class="modal-content-custom">
+        <span class="close-btn" onclick="cerrarModal()">✖</span>
+        <div id="contenidoModal"></div>
+    </div>
+</div>
+
+<!-- LISTA -->
+<div class="mt-5">
+    <h4>📋 Eventos del mes</h4>
+
+    @if (!Model.Any())
+    {
+        <p>No hay eventos cargados.</p>
+    }
+    else
+    {
+        @foreach (var e in Model.OrderBy(e => e.Fecha))
+        {
+            <div class="card p-3 mb-3">
+
+                <strong>@e.NombreCliente</strong><br />
+                📅 @e.Fecha.ToShortDateString()<br />
+                🕒 @e.Hora<br />
+                💰 Saldo: $@e.SaldoPendiente<br />
+                📌 Estado: @e.Estado
+
+                <!-- 🔥 MOVIMIENTOS -->
+                <div class="mt-2">
+                    <strong>Movimientos:</strong>
+
+                    @if (e.Movimientos != null && e.Movimientos.Any())
+                    {
+                        @foreach (var m in e.Movimientos.OrderByDescending(m => m.Fecha))
+                        {
+                            <div style="font-size:14px; margin-left:10px;">
+                                ➤ @m.Tipo - $@m.Monto (@m.Fecha.ToShortDateString())
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div style="font-size:14px; margin-left:10px;">
+                            Sin movimientos
+                        </div>
+                    }
+                </div>
+
+                <!-- 🔥 BOTONES -->
+                <div class="mt-3 d-flex gap-2 flex-wrap">
+
+                    <a href="/Eventos/DescargarPdf/@e.Id" class="btn btn-warning">
+                        📄 PDF
+                    </a>
+
+                    <a href="/Movimientos/Create?eventoId=@e.Id&tipo=Ingreso" class="btn btn-success">
+                        ➕ Pago / Seña
+                    </a>
+
+                    <a href="/Movimientos/Create?eventoId=@e.Id&tipo=Gasto" class="btn btn-danger">
+                        ➖ Gasto
+                    </a>
+
+                </div>
+
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    var eventos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.Select(e => new
+        {
+            title = e.NombreCliente,
+            start = e.Fecha.ToString("yyyy-MM-dd"),
+            hora = e.Hora.ToString()
+        })
+    ));
+
+    var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        selectable: true,
+        events: eventos,
+
+        dateClick: function(info) {
+
+            var fecha = info.dateStr;
+            var eventosDelDia = eventos.filter(e => e.start === fecha);
+
+            var html = "<h5>Eventos del " + fecha + "</h5>";
+
+            if (eventosDelDia.length === 0) {
+                html += "<p>No hay eventos</p>";
+            } else {
+                eventosDelDia.forEach(e => {
+                    html += `
+                        <div class="card p-2 mb-2">
+                            <strong>${e.title}</strong><br/>
+                            🕒 ${e.hora}
+                        </div>`;
+                });
+            }
+
+            document.getElementById("contenidoModal").innerHTML = html;
+            document.getElementById("modalEventos").style.display = "flex";
+        }
+    });
+
+    calendar.render();
+});
+
+function cerrarModal() {
+    document.getElementById("modalEventos").style.display = "none";
+}
+</script>
+
+}

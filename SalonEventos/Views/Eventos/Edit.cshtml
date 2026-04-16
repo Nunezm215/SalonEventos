@@ -1,0 +1,69 @@
+﻿@model SalonEventos.Models.Evento
+
+<h2 class="page-title">✏️ Editar Evento</h2>
+
+<div class="card">
+<div class="card-body">
+<form asp-action="Edit">
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="NombreCliente"></label>
+        <input asp-for="NombreCliente" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Telefono"></label>
+        <input asp-for="Telefono" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Fecha"></label>
+        <input asp-for="Fecha" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Hora"></label>
+        <input asp-for="Hora" type="time" class="form-control" step="60" />
+        <span asp-validation-for="Hora" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TipoEvento"></label>
+        <select asp-for="TipoEvento" class="form-control">
+            <option value="Cumple infantil">Cumple infantil</option>
+            <option value="Adolescente">Adolescente</option>
+            <option value="Bautismo">Bautismo</option>
+            <option value="Reunión familiar">Reunión familiar</option>
+            <option value="Otro">Otro</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CantidadInvitados"></label>
+        <input asp-for="CantidadInvitados" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Estado"></label>
+        <select asp-for="Estado" class="form-control">
+            <option value="Reservado">Reservado</option>
+            <option value="Señado">Señado</option>
+            <option value="Pagado">Pagado</option>
+        </select>
+    </div>
+
+    <div class="section-actions mb-0">
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <a asp-action="Index" class="btn btn-outline-dark">Volver</a>
+    </div>
+</form>
+</div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

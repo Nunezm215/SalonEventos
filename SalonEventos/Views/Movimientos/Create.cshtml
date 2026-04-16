@@ -1,0 +1,95 @@
+@model SalonEventos.Models.Movimiento
+
+<h2 class="page-title">➕ Nuevo Movimiento</h2>
+
+<div class="card">
+<div class="card-body">
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Tipo" class="form-label">Tipo</label>
+        <select asp-for="Tipo" class="form-control" id="tipoMovimiento">
+            <option value="Ingreso">Ingreso</option>
+            <option value="Gasto">Gasto</option>
+        </select>
+        <span asp-validation-for="Tipo" class="text-danger"></span>
+    </div>
+
+    <div id="bloqueGasto" class="mb-3" style="display:none;">
+        <label class="form-label">Motivo del gasto</label>
+        <select class="form-control" name="motivoGasto" id="motivoGasto">
+            <option value="">-- Seleccionar --</option>
+            <option value="EventoReservado">Cumple reservado</option>
+            <option value="Mantenimiento">Mantenimiento</option>
+        </select>
+    </div>
+
+    <div id="bloqueEventoReservado" class="mb-3" style="display:none;">
+        <label class="form-label">Evento reservado</label>
+        <select class="form-control" name="eventoId" id="eventoId" asp-items="ViewBag.EventosReservados">
+            <option value="">-- Seleccionar evento --</option>
+        </select>
+        <div class="form-text">Se usa el nombre del cliente reservado como motivo del gasto.</div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Monto" class="form-label">Monto</label>
+        <input asp-for="Monto" class="form-control" min="0.01" step="0.01" />
+        <span asp-validation-for="Monto" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Fecha" class="form-label">Fecha</label>
+        <input asp-for="Fecha" type="date" class="form-control" />
+        <span asp-validation-for="Fecha" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3" id="bloqueDescripcionManual">
+        <label asp-for="Descripcion" class="form-label">Descripción (opcional)</label>
+        <input asp-for="Descripcion" class="form-control" />
+        <span asp-validation-for="Descripcion" class="text-danger"></span>
+    </div>
+
+    <div class="section-actions mb-0">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a asp-action="Index" class="btn btn-outline-dark">Volver</a>
+    </div>
+</form>
+</div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            var tipoMovimiento = document.getElementById("tipoMovimiento");
+            var motivoGasto = document.getElementById("motivoGasto");
+            var bloqueGasto = document.getElementById("bloqueGasto");
+            var bloqueEventoReservado = document.getElementById("bloqueEventoReservado");
+            var bloqueDescripcionManual = document.getElementById("bloqueDescripcionManual");
+
+            function actualizarVistaGasto() {
+                var esGasto = tipoMovimiento.value === "Gasto";
+                bloqueGasto.style.display = esGasto ? "block" : "none";
+
+                if (!esGasto) {
+                    motivoGasto.value = "";
+                    bloqueEventoReservado.style.display = "none";
+                    bloqueDescripcionManual.style.display = "block";
+                    return;
+                }
+
+                var usaEventoReservado = motivoGasto.value === "EventoReservado";
+                bloqueEventoReservado.style.display = usaEventoReservado ? "block" : "none";
+                bloqueDescripcionManual.style.display = "none";
+            }
+
+            tipoMovimiento.addEventListener("change", actualizarVistaGasto);
+            motivoGasto.addEventListener("change", actualizarVistaGasto);
+            actualizarVistaGasto();
+        })();
+    </script>
+}

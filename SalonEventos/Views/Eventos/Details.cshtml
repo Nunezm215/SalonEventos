@@ -1,0 +1,130 @@
+@model SalonEventos.Models.Evento
+
+@{
+    ViewData["Title"] = "Detalle del Evento";
+}
+
+<h2 class="page-title">📄 Detalle del Evento</h2>
+
+@if (TempData["OkPago"] != null)
+{
+    <div class="alert alert-success">@TempData["OkPago"]</div>
+}
+
+@if (TempData["ErrorPago"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorPago"]</div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Datos del cliente y del evento</h5>
+
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Cliente</dt>
+            <dd class="col-sm-9">@Model.NombreCliente</dd>
+
+            <dt class="col-sm-3">Teléfono</dt>
+            <dd class="col-sm-9">@Model.Telefono</dd>
+
+            <dt class="col-sm-3">Fecha</dt>
+            <dd class="col-sm-9">@Model.Fecha.ToShortDateString()</dd>
+
+            <dt class="col-sm-3">Hora</dt>
+            <dd class="col-sm-9">@Model.Hora.ToString(@"hh\:mm")</dd>
+
+            <dt class="col-sm-3">Tipo de evento</dt>
+            <dd class="col-sm-9">@Model.TipoEvento</dd>
+
+            <dt class="col-sm-3">Invitados</dt>
+            <dd class="col-sm-9">@Model.CantidadInvitados</dd>
+
+            <dt class="col-sm-3">Estado</dt>
+            <dd class="col-sm-9">
+                @if (Model.Estado == "Pagado")
+                {
+                    <span class="badge bg-success">Pagado</span>
+                }
+                else if (Model.Estado == "Señado")
+                {
+                    <span class="badge bg-info text-dark">Señado</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">Reservado</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Resumen de pagos</h5>
+
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Monto total</dt>
+            <dd class="col-sm-9">@Model.MontoTotal.ToString("C")</dd>
+
+            <dt class="col-sm-3">Seña / abonado</dt>
+            <dd class="col-sm-9">@Model.Senia.ToString("C")</dd>
+
+            <dt class="col-sm-3">Saldo pendiente</dt>
+            <dd class="col-sm-9">@Model.SaldoPendiente.ToString("C")</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Registrar nuevo pago</h5>
+
+        <form asp-action="RegistrarPago" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <div class="col-md-4">
+                <label class="form-label">Tipo de pago</label>
+                <select name="tipoPago" id="tipoPago" class="form-select">
+                    <option value="Parcial">Abono parcial</option>
+                    <option value="Completo">Pago completo</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Monto abonado</label>
+                <input type="number" name="montoAbonado" id="montoAbonado" class="form-control" min="0.01" step="0.01" value="0" />
+                <div class="form-text">Si elegís "Pago completo", se cancela todo el saldo pendiente.</div>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-success w-100">Guardar pago</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="section-actions">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
+    <a asp-action="Index" class="btn btn-outline-dark">Volver a eventos</a>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var tipoPago = document.getElementById("tipoPago");
+            var montoAbonado = document.getElementById("montoAbonado");
+
+            function actualizarCampoMonto() {
+                var esCompleto = tipoPago.value === "Completo";
+                montoAbonado.disabled = esCompleto;
+                if (esCompleto) {
+                    montoAbonado.value = "0";
+                }
+            }
+
+            tipoPago.addEventListener("change", actualizarCampoMonto);
+            actualizarCampoMonto();
+        })();
+    </script>
+}

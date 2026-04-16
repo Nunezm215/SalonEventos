@@ -1,0 +1,79 @@
+﻿@model SalonEventos.Models.Evento
+
+@{
+    ViewData["Title"] = "Crear Evento";
+}
+
+<h2>➕ Crear Evento</h2>
+
+<form asp-action="Create">
+
+    <div class="mb-3">
+        <label asp-for="NombreCliente" class="form-label"></label>
+        <input asp-for="NombreCliente" class="form-control" />
+        <span asp-validation-for="NombreCliente" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Telefono" class="form-label"></label>
+        <input asp-for="Telefono" class="form-control" />
+        <span asp-validation-for="Telefono" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Fecha" class="form-label"></label>
+        <input asp-for="Fecha" type="date" class="form-control" />
+        <span asp-validation-for="Fecha" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TipoEvento" class="form-label"></label>
+        <select asp-for="TipoEvento" class="form-control">
+            <option value="">-- Seleccionar --</option>
+            <option value="Cumple infantil">Cumple infantil</option>
+            <option value="Adolescente">Adolescente</option>
+            <option value="Bautismo">Bautismo</option>
+            <option value="Reunión familiar">Reunión familiar</option>
+            <option value="Otro">Otro</option>
+        </select>
+        <span asp-validation-for="TipoEvento" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CantidadInvitados" class="form-label"></label>
+        <input asp-for="CantidadInvitados" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MontoTotal" class="form-label"></label>
+        <input asp-for="MontoTotal" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Senia" class="form-label"></label>
+        <input asp-for="Senia" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SaldoPendiente" class="form-label"></label>
+        <input asp-for="SaldoPendiente" class="form-control" />
+    </div>
+
+    <!-- 🔥 ESTADO CORREGIDO -->
+    <div class="mb-3">
+        <label asp-for="Estado" class="form-label"></label>
+        <select asp-for="Estado" class="form-control">
+            <option value="Reservado">Reservado</option>
+            <option value="Señado">Señado</option>
+            <option value="Pagado">Pagado</option>
+        </select>
+        <span asp-validation-for="Estado" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

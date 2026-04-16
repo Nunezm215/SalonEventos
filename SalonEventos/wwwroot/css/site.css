@@ -1,0 +1,168 @@
+/* ===== GENERAL ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #0b1220;
+    color: #e5e7eb;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* ===== LAYOUT ===== */
+.app {
+    display: flex;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 230px;
+    height: 100vh;
+    background: #111827;
+    padding: 20px;
+}
+
+.logo {
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+
+.nav-link {
+    display: block;
+    padding: 10px;
+    margin-bottom: 5px;
+    color: #cbd5e1;
+    border-radius: 6px;
+}
+
+    .nav-link:hover {
+        background: #1f2937;
+        color: white;
+    }
+
+/* ===== MAIN ===== */
+.main-content {
+    flex: 1;
+    padding: 40px;
+}
+
+/* ===== TITULOS ===== */
+h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+h4 {
+    margin-top: 20px;
+}
+
+/* ===== HERO ===== */
+.hero-panel p {
+    color: #94a3b8;
+}
+
+/* ===== CARDS ===== */
+.card {
+    background: #111827 !important;
+    border: 1px solid #1f2937;
+    border-radius: 10px;
+    color: white;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* ===== BOTONES (BOOTSTRAP OVERRIDE) ===== */
+.btn {
+    border-radius: 8px !important;
+    padding: 10px 16px;
+    font-weight: 500;
+}
+
+/* COLORES */
+.btn-primary {
+    background-color: #2563eb !important;
+    border: none;
+}
+
+.btn-success {
+    background-color: #16a34a !important;
+    border: none;
+}
+
+.btn-warning {
+    background-color: #facc15 !important;
+    border: none;
+    color: black !important;
+}
+
+.btn-danger {
+    background-color: #dc2626 !important;
+    border: none;
+}
+
+/* ===== ACCIONES ===== */
+.section-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ===== CALENDARIO ===== */
+#calendar {
+    margin-top: 20px;
+    background: #111827;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* ===== MODAL EVENTOS ===== */
+.modal-custom {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content-custom {
+    background: #111827;
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+    color: white;
+}
+
+.close-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* ===== MODAL FORM ===== */
+.modal-content-custom input,
+.modal-content-custom select {
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+}
+
+/* ===== EVENTOS LISTA ===== */
+.card p {
+    margin: 0;
+}
+
+/* ===== SCROLL SUAVE ===== */
+html {
+    scroll-behavior: smooth;
+}
+
