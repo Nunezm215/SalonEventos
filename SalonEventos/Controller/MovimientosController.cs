@@ -1,9 +1,12 @@
-
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using SalonEventos.Data;
 using SalonEventos.Models;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+
 
 namespace SalonEventos.Controllers
 {
@@ -16,124 +19,151 @@ namespace SalonEventos.Controllers
             _context = context;
         }
 
-        // LISTA
-        public IActionResult Index()
+        // 🔥 GET
+        public IActionResult Create(int eventoId)
         {
-            var lista = _context.Movimientos
-                .Include(m => m.Evento)
-                .ToList();
-
-            return View(lista);
-        }
-
-        // CREATE GET
-        public IActionResult Create(int? eventoId, string? tipo)
-        {
-            CargarEventos();
-
             var movimiento = new Movimiento
             {
-                EventoId = eventoId ?? 0,
-                Tipo = string.Equals(tipo, "Gasto", StringComparison.OrdinalIgnoreCase) ? "Gasto" : "Ingreso",
+                EventoId = eventoId,
                 Fecha = DateTime.Today,
-                Monto = 0
+                Tipo = "Ingreso"
             };
 
             return View(movimiento);
         }
 
-        // CREATE POST
+        // 🔥 POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Movimiento movimiento, string? motivoGasto)
+        public IActionResult Create(Movimiento movimiento)
         {
-            // 🔥 VALIDAR EVENTO
-            if (movimiento.EventoId == 0)
-            {
-                ModelState.AddModelError("EventoId", "Debés seleccionar un evento.");
-            }
+            // 🔥 asegurar valores
+            if (movimiento.Fecha == default)
+                movimiento.Fecha = DateTime.Today;
 
-            // 🔥 VALIDAR MONTO
             if (movimiento.Monto <= 0)
-            {
-                ModelState.AddModelError("Monto", "El monto debe ser mayor a 0.");
-            }
-
-            // 🔥 VALIDACIÓN GASTOS
-            if (movimiento.Tipo == "Gasto")
-            {
-                if (motivoGasto == "Mantenimiento")
-                {
-                    movimiento.Descripcion = "Mantenimiento";
-                }
-                else if (motivoGasto == "EventoReservado")
-                {
-                    var evento = _context.Eventos.FirstOrDefault(e => e.Id == movimiento.EventoId);
-
-                    if (evento == null)
-                    {
-                        ModelState.AddModelError(string.Empty, "Seleccioná un evento válido.");
-                    }
-                    else
-                    {
-                        movimiento.Descripcion = $"Gasto del evento: {evento.NombreCliente} ({evento.Fecha:dd/MM/yyyy})";
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Seleccioná un motivo de gasto.");
-                }
-            }
-
-            // 🔥 SI TODO OK
-            if (ModelState.IsValid)
-            {
-                _context.Movimientos.Add(movimiento);
-
-                // 🔥 ACTUALIZAR EVENTO
-                var evento = _context.Eventos.FirstOrDefault(e => e.Id == movimiento.EventoId);
-
-                if (evento != null)
-                {
-                    if (movimiento.Tipo == "Ingreso")
-                    {
-                        evento.Senia += movimiento.Monto;
-                    }
-
-                    if (movimiento.Tipo == "Gasto")
-                    {
-                        evento.MontoTotal += movimiento.Monto;
-                    }
-
-                    evento.SaldoPendiente = evento.MontoTotal - evento.Senia;
-
-                    if (evento.SaldoPendiente <= 0)
-                        evento.Estado = "Pagado";
-                    else if (evento.Senia > 0)
-                        evento.Estado = "Señado";
-                }
-
-                _context.SaveChanges();
-
-                // 🔥 VOLVER AL EVENTO (MEJOR UX)
                 return RedirectToAction("Index", "Eventos");
+
+            var evento = _context.Eventos.FirstOrDefault(e => e.Id == movimiento.EventoId);
+
+            if (evento == null)
+            {
+                return Content("ERROR: Evento no encontrado");
             }
 
-            CargarEventos();
-            return View(movimiento);
-        }
+            // 🔥 guardar movimiento
+            _context.Movimientos.Add(movimiento);
 
-        // 🔥 CARGAR EVENTOS (TODOS, no solo reservados)
-        private void CargarEventos()
+            // 🔥 actualizar evento
+            if (movimiento.Tipo == "Ingreso")
+                evento.Senia += movimiento.Monto;
+
+            if (movimiento.Tipo == "Gasto")
+                evento.MontoTotal += movimiento.Monto;
+
+            evento.SaldoPendiente = evento.MontoTotal - evento.Senia;
+
+            if (evento.SaldoPendiente <= 0)
+                evento.Estado = "Pagado";
+            else if (evento.Senia > 0)
+                evento.Estado = "Señado";
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Eventos");
+        }
+       
+public IActionResult Comprobante(int id)
         {
-            ViewBag.Eventos = _context.Eventos
-                .OrderBy(e => e.Fecha)
-                .Select(e => new SelectListItem
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var movimiento = _context.Movimientos
+                .Where(m => m.Id == id)
+                .Select(m => new
                 {
-                    Value = e.Id.ToString(),
-                    Text = $"{e.NombreCliente} - {e.Fecha:dd/MM/yyyy} {e.Hora:hh\\:mm}"
+                    m.Id,
+                    m.Tipo,
+                    m.Monto,
+                    m.Fecha,
+                    m.Descripcion,
+                    Cliente = m.Evento.NombreCliente
                 })
-                .ToList();
+                .FirstOrDefault();
+
+            if (movimiento == null) return NotFound();
+
+            var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo2.png");
+
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(30);
+
+                    page.Content().Column(col =>
+                    {
+                        // 🔥 HEADER
+                        col.Item().Row(row =>
+                        {
+                            if (System.IO.File.Exists(logoPath))
+                            {
+
+                            row.ConstantItem(100)
+                                .Image(logoPath);
+                            }
+
+                            row.RelativeItem().Column(c =>
+                            {
+                                c.Item().Text("EL GALPON MULTIEVENTOS")
+                                    .Bold().FontSize(18);
+
+                                c.Item().Text("Francisco Paula de Castañeda N°660")
+                                    .FontSize(10);
+
+                                c.Item().Text("Comprobante de movimiento")
+                                    .FontSize(12).Italic();
+                            });
+                        });
+
+                        col.Item().PaddingVertical(10).LineHorizontal(1);
+
+                        // 🔥 TÍTULO
+                        col.Item().AlignCenter().Text("COMPROBANTE")
+                            .FontSize(20).Bold();
+
+                        col.Item().PaddingVertical(10);
+
+                        // 🔥 CAJA DE DATOS
+                        col.Item().Border(1).Padding(10).Column(c =>
+                        {
+                            c.Item().Text($"Cliente: {movimiento.Cliente}");
+                            c.Item().Text($"Tipo: {movimiento.Tipo}");
+                            c.Item().Text($"Fecha: {movimiento.Fecha:dd/MM/yyyy}");
+
+                            if (!string.IsNullOrEmpty(movimiento.Descripcion))
+                                c.Item().Text($"Detalle: {movimiento.Descripcion}");
+                        });
+
+                        col.Item().PaddingTop(15);
+
+                        // 🔥 MONTO DESTACADO
+                        col.Item().AlignCenter().Text($"$ {movimiento.Monto}")
+                            .FontSize(24)
+                            .Bold();
+
+                        col.Item().PaddingTop(20);
+
+                        col.Item().AlignCenter().Text(
+                            "Gracias por confiar en El Galpón Multieventos"
+                        ).Italic().FontSize(12);
+                    });
+                });
+            });
+
+            using var stream = new MemoryStream();
+            document.GeneratePdf(stream);
+
+            return File(stream.ToArray(), "application/pdf", $"Movimiento_{movimiento.Id}.pdf");
         }
     }
 }

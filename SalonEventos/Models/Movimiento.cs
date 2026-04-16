@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System;
 
 namespace SalonEventos.Models
 {
@@ -6,15 +7,14 @@ namespace SalonEventos.Models
     {
         public int Id { get; set; }
 
-        public string Tipo { get; set; } // Pago, Seña, Gasto, Servicio
+        public string Tipo { get; set; }
 
         public decimal Monto { get; set; }
 
-        public DateTime Fecha { get; set; } = DateTime.Now;
+        public DateTime Fecha { get; set; }
 
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
-        // 🔥 RELACION CON EVENTO
         public int EventoId { get; set; }
         public Evento Evento { get; set; }
     }

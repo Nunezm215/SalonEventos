@@ -34,6 +34,7 @@
                 📌 Estado: @e.Estado
 
                 <!-- 🔥 MOVIMIENTOS -->
+             
                 <div class="mt-2">
                     <strong>Movimientos:</strong>
 
@@ -41,18 +42,28 @@
                     {
                         @foreach (var m in e.Movimientos.OrderByDescending(m => m.Fecha))
                         {
-                            <div style="font-size:14px; margin-left:10px;">
-                                ➤ @m.Tipo - $@m.Monto (@m.Fecha.ToShortDateString())
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-left:10px; font-size:14px;">
+
+                                <!-- TEXTO -->
+                                <div>
+                                    ➤ @m.Tipo - $@m.Monto (@m.Fecha.ToShortDateString())
+                                </div>
+
+                                <!-- 🔥 BOTÓN PDF -->
+                                <a href="/Movimientos/Comprobante/@m.Id" class="btn btn-sm btn-outline-light">
+                                    📄
+                                </a>
+
                             </div>
                         }
                     }
                     else
                     {
-                        <div style="font-size:14px; margin-left:10px;">
-                            Sin movimientos
-                        </div>
+                        <div style="margin-left:10px;">Sin movimientos</div>
                     }
                 </div>
+              
+
 
                 <!-- 🔥 BOTONES -->
                 <div class="mt-3 d-flex gap-2 flex-wrap">
@@ -61,12 +72,8 @@
                         📄 PDF
                     </a>
 
-                    <a href="/Movimientos/Create?eventoId=@e.Id&tipo=Ingreso" class="btn btn-success">
-                        ➕ Pago / Seña
-                    </a>
-
-                    <a href="/Movimientos/Create?eventoId=@e.Id&tipo=Gasto" class="btn btn-danger">
-                        ➖ Gasto
+                    <a href="/Movimientos/Create?eventoId=@e.Id" class="btn btn-primary">
+                        💰 Realizar movimiento
                     </a>
 
                 </div>
