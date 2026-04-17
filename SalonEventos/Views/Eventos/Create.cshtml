@@ -1,111 +1,209 @@
-﻿@model SalonEventos.Models.Evento
-
-@{
-    ViewData["Title"] = "Crear Evento";
-}
+@model SalonEventos.Models.Evento
 
 <h2 class="page-title">➕ Crear Evento</h2>
 
-<div class="card">
-<div class="card-body">
-<form asp-controller="Eventos" asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
+<div class="row">
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <!-- FORM -->
+    <div class="col-lg-8">
 
-    <!-- 👇 NECESARIO PARA QUE NO ROMPA -->
-    <input type="hidden" asp-for="SaldoPendiente" />
+        <div class="card">
+            <div class="card-body">
 
-    <div class="mb-3">
-        <label asp-for="NombreCliente"></label>
-        <input asp-for="NombreCliente" class="form-control" />
-        <span asp-validation-for="NombreCliente" class="text-danger"></span>
+                @if (TempData["ErrorEvento"] != null)
+                {
+                    <div class="alert alert-danger">
+                        ❌ @TempData["ErrorEvento"]
+                    </div>
+                }
+
+                <form asp-controller="Eventos" asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <input type="hidden" asp-for="MontoRestante" />
+
+                    <div class="mb-3">
+                        <label asp-for="NombreCliente"></label>
+                        <input asp-for="NombreCliente" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Telefono"></label>
+                        <input asp-for="Telefono" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TipoEvento"></label>
+                        <select asp-for="TipoEvento" class="form-control">
+                            <option>Cumple infantil</option>
+                            <option>Adolescente</option>
+                            <option>Bautismo</option>
+                            <option>Reunión familiar</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Fecha"></label>
+                        <input asp-for="Fecha" type="date" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Hora"></label>
+                        <input asp-for="Hora" type="time" class="form-control" step="60" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CantidadInvitados"></label>
+                        <input asp-for="CantidadInvitados" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MontoTotal"></label>
+                        <input asp-for="MontoTotal" class="form-control" id="montoTotal" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Senia"></label>
+                        <input asp-for="Senia" class="form-control" id="senia" />
+                        <span asp-validation-for="Senia" class="text-danger"></span>
+
+                        <!-- 🔥 ERROR EN VIVO -->
+                        <small id="errorSenia" class="text-danger"></small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Saldo Pendiente</label>
+                        <input type="text" id="saldo" class="form-control" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Estado</label>
+                        <input type="text" class="form-control" value="Se calcula automáticamente" readonly />
+                    </div>
+
+                    <div class="section-actions">
+                        <button type="submit" class="btn btn-success" id="btnGuardar">Guardar</button>
+                        <a asp-action="Index" class="btn btn-outline-dark">Volver</a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Telefono"></label>
-        <input asp-for="Telefono" class="form-control" />
-        <span asp-validation-for="Telefono" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="TipoEvento"></label>
-        <select asp-for="TipoEvento" class="form-control">
-            <option value="Cumple infantil">Cumple infantil</option>
-            <option value="Adolescente">Adolescente</option>
-            <option value="Bautismo">Bautismo</option>
-            <option value="Reunión familiar">Reunión familiar</option>
-            <option value="Otro">Otro</option>
-        </select>
-        <span asp-validation-for="TipoEvento" class="text-danger"></span>
+    <!-- CALENDARIO -->
+    <div class="col-lg-4">
+
+        <div class="card sticky-calendar">
+            <div class="card-body">
+
+                <h6>📅 Eventos</h6>
+
+                <div id="miniCalendar"></div>
+
+            </div>
+        </div>
+
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Fecha"></label>
-        <input asp-for="Fecha" type="date" class="form-control" />
-        <span asp-validation-for="Fecha" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Hora"></label>
-        <input asp-for="Hora" type="time" class="form-control" step="60" />
-        <span asp-validation-for="Hora" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="CantidadInvitados"></label>
-        <input asp-for="CantidadInvitados" class="form-control" min="0" />
-        <span asp-validation-for="CantidadInvitados" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="MontoTotal"></label>
-        <input asp-for="MontoTotal" class="form-control" id="montoTotal" />
-        <span asp-validation-for="MontoTotal" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Senia"></label>
-        <input asp-for="Senia" class="form-control" id="senia" />
-        <span asp-validation-for="Senia" class="text-danger"></span>
-    </div>
-
-    <!-- 👇 SOLO VISUAL -->
-    <div class="mb-3">
-        <label>Saldo Pendiente</label>
-        <input type="text" id="saldo" class="form-control" readonly />
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Estado"></label>
-        <select asp-for="Estado" class="form-control">
-            <option value="Reservado">Reservado</option>
-            <option value="Señado">Señado</option>
-            <option value="Pagado">Pagado</option>
-        </select>
-        <span asp-validation-for="Estado" class="text-danger"></span>
-    </div>
-
-    <div class="section-actions mb-0">
-        <button type="submit" class="btn btn-success">Guardar</button>
-        <a asp-action="Index" class="btn btn-outline-dark">Volver</a>
-    </div>
-</form>
 </div>
+
+<!-- MODAL -->
+<div id="modalMini" class="modal-custom">
+    <div class="modal-content-custom">
+        <span class="close-btn" onclick="cerrarMini()">✖</span>
+        <div id="contenidoMini"></div>
+    </div>
 </div>
 
 @section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
     <script>
-        function calcularSaldo() {
-            var total = parseFloat(document.getElementById("montoTotal").value) || 0;
-            var senia = parseFloat(document.getElementById("senia").value) || 0;
+        document.addEventListener('DOMContentLoaded', function () {
 
-            var saldo = total - senia;
+        // 🔥 CALENDARIO
+        fetch('/Eventos/GetEventosJson')
+        .then(res => res.json())
+        .then(eventos => {
 
-            document.getElementById("saldo").value = saldo;
+        var calendar = new FullCalendar.Calendar(document.getElementById('miniCalendar'), {
+        initialView: 'dayGridMonth',
+        height: 280,
+        locale: 'es',
+        headerToolbar: {
+        left: 'prev,next',
+        center: 'title',
+        right: ''
+        },
+        events: eventos,
+
+        dateClick: function(info) {
+
+        var fecha = info.dateStr;
+        var eventosDelDia = eventos.filter(e => e.start === fecha);
+
+        var html = "<h5>Eventos del " + fecha + "</h5>";
+
+        if (eventosDelDia.length === 0) {
+        html += "<p>No hay eventos</p>";
+        } else {
+        eventosDelDia.forEach(e => {
+        html += `
+        <div class="card p-2 mb-2">
+        <strong>${e.title}</strong><br/>
+        🕒 ${e.hora}
+        </div>`;
+        });
         }
 
-        document.getElementById("montoTotal").addEventListener("input", calcularSaldo);
-        document.getElementById("senia").addEventListener("input", calcularSaldo);
+        document.getElementById("contenidoMini").innerHTML = html;
+        document.getElementById("modalMini").style.display = "flex";
+        }
+        });
+
+        calendar.render();
+        });
+
+        // 🔥 VALIDACIÓN EN VIVO
+        function validar() {
+        var total = parseFloat(document.getElementById("montoTotal").value) || 0;
+        var senia = parseFloat(document.getElementById("senia").value) || 0;
+
+        var error = document.getElementById("errorSenia");
+        var btn = document.getElementById("btnGuardar");
+
+        var saldo = total - senia;
+        document.getElementById("saldo").value = saldo;
+
+        if (senia > total) {
+        error.innerText = "La seña no puede ser mayor al monto total";
+        btn.disabled = true;
+        } else if (senia <= 0) {
+        error.innerText = "Debe ingresar una seña";
+        btn.disabled = true;
+        } else {
+        error.innerText = "";
+        btn.disabled = false;
+        }
+        }
+
+        document.getElementById("montoTotal").addEventListener("input", validar);
+        document.getElementById("senia").addEventListener("input", validar);
+
+        validar();
+        });
+
+        // MODAL
+        function cerrarMini() {
+        document.getElementById("modalMini").style.display = "none";
+        }
     </script>
 
     <partial name="_ValidationScriptsPartial" />

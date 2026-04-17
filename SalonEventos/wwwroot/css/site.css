@@ -13,119 +13,189 @@ a {
 /* ===== LAYOUT ===== */
 .app {
     display: flex;
+    width: 100%;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
     width: 230px;
     height: 100vh;
-    background: #111827;
+    background: linear-gradient(180deg, #111827, #020617);
     padding: 20px;
+    border-right: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+        flex-direction: column;
 }
 
-.logo {
-    margin-bottom: 20px;
-    font-size: 18px;
+/* LOGO */
+.logo-container {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo-text {
+    font-size: 16px;
     font-weight: bold;
     color: white;
 }
 
-.nav-link {
+.logo-img {
+    width: 120px;
     display: block;
-    padding: 10px;
-    margin-bottom: 5px;
+    margin: 0 auto 10px auto;
+}
+
+/* NAV */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
     color: #cbd5e1;
-    border-radius: 6px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
     .nav-link:hover {
-        background: #1f2937;
+        background: rgba(59,130,246,0.2);
         color: white;
+        transform: translateX(3px);
+    }
+
+    .nav-link.active {
+        background: #2563eb;
+        color: white;
+    }
+        
+/* ===== WRAPPER ===== */
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    height: 60px;
+    background: #020617;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 25px;
+}
+
+    .topbar h5 {
+        margin: 0;
+        font-weight: 600;
     }
 
 /* ===== MAIN ===== */
 .main-content {
     flex: 1;
-    padding: 40px;
+    width: 100%;
+    padding: 30px;
+    background: #020617;
 }
 
-/* ===== TITULOS ===== */
-h1 {
-    font-size: 42px;
-    margin-bottom: 10px;
-}
-
-h4 {
-    margin-top: 20px;
-}
-
-/* ===== HERO ===== */
-.hero-panel p {
-    color: #94a3b8;
+/* FULL WIDTH */
+.container,
+.container-fluid {
+    max-width: 100% !important;
+    padding: 0 !important;
 }
 
 /* ===== CARDS ===== */
 .card {
     background: #111827 !important;
     border: 1px solid #1f2937;
-    border-radius: 10px;
+    border-radius: 12px;
     color: white;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.25);
+    transition: 0.25s;
 }
 
-.card-body {
-    padding: 20px;
-}
+    .card:hover {
+        transform: translateY(-4px);
+    }
 
-/* ===== BOTONES (BOOTSTRAP OVERRIDE) ===== */
+/* ===== BOTONES ===== */
 .btn {
-    border-radius: 8px !important;
-    padding: 10px 16px;
-    font-weight: 500;
+    border-radius: 10px !important;
 }
 
-/* COLORES */
-.btn-primary {
-    background-color: #2563eb !important;
-    border: none;
-}
-
-.btn-success {
-    background-color: #16a34a !important;
-    border: none;
-}
-
-.btn-warning {
-    background-color: #facc15 !important;
-    border: none;
-    color: black !important;
-}
-
-.btn-danger {
-    background-color: #dc2626 !important;
-    border: none;
-}
-
-/* ===== ACCIONES ===== */
-.section-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-/* ===== CALENDARIO ===== */
+/* ===== CALENDARIO CONTENEDOR ===== */
 #calendar {
     margin-top: 20px;
-    background: #111827;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 20px;
+    border-radius: 16px;
+    background: #020617;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 
-/* ===== MODAL EVENTOS ===== */
+/* 🔥 ESTO ES LO IMPORTANTE (FULLCALENDAR OVERRIDE REAL) */
+
+/* FONDO GENERAL */
+.fc {
+    background: #020617 !important;
+    color: #e5e7eb !important;
+    min-height: 750px;
+}
+
+/* HEADER */
+.fc-toolbar-title {
+    font-size: 24px !important;
+    font-weight: 600;
+}
+
+/* BOTONES */
+.fc .fc-button {
+    background: #111827 !important;
+    border: 1px solid #1f2937 !important;
+    border-radius: 8px !important;
+}
+
+/* GRID */
+.fc .fc-daygrid-day {
+    background: #020617 !important;
+    border: 1px solid #1f2937 !important;
+}
+
+    .fc .fc-daygrid-day:hover {
+        background: #0b1220 !important;
+    }
+
+/* NOMBRE DÍAS */
+.fc-col-header-cell {
+    background: #020617 !important;
+}
+
+.fc-col-header-cell-cushion {
+    color: #9ca3af !important;
+}
+
+/* HOY */
+.fc .fc-day-today {
+    background: rgba(59,130,246,0.15) !important;
+}
+
+/* EVENTOS */
+.fc-event {
+    background: #2563eb !important;
+    border: none !important;
+    border-radius: 6px !important;
+}
+
+/* ===== MODAL ===== */
 .modal-custom {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
     justify-content: center;
     align-items: center;
     z-index: 9999;
@@ -134,56 +204,75 @@ h4 {
 .modal-content-custom {
     background: #111827;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 12px;
     width: 350px;
-    color: white;
 }
 
-.close-btn {
-    float: right;
-    cursor: pointer;
-    font-size: 18px;
+/* ===== SCROLL ===== */
+::-webkit-scrollbar {
+    width: 8px;
 }
 
-/* ===== MODAL FORM ===== */
-.modal-content-custom input,
-.modal-content-custom select {
+::-webkit-scrollbar-thumb {
+    background: #1f2937;
+    border-radius: 10px;
+}
+/* FORZAR CAMBIO VISUAL FULLCALENDAR */
+.fc {
+    background: #020617 !important;
+}
+
+    .fc .fc-daygrid-day {
+        background: #020617 !important;
+        border: 1px solid #1f2937 !important;
+    }
+
+        .fc .fc-daygrid-day:hover {
+            background: #0b1220 !important;
+        }
+
+    .fc .fc-toolbar-title {
+        color: white !important;
+    }
+
+    .fc .fc-button {
+        background: #111827 !important;
+        border: 1px solid #1f2937 !important;
+        color: white !important;
+    }
+
+.fc-event {
+    background: #2563eb !important;
+    border: none !important;
+}
+/* CONTENEDOR */
+.row {
+    align-items: flex-start;
+}
+
+/* CALENDARIO */
+#miniCalendar {
     width: 100%;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
 }
 
-/* ===== EVENTOS LISTA ===== */
-.card p {
-    margin: 0;
-}
+    /* TAMAÑO */
+    #miniCalendar .fc {
+        height: 280px !important;
+    }
 
-/* ===== SCROLL SUAVE ===== */
-html {
-    scroll-behavior: smooth;
-}
-.logo-container {
-    text-align: center;
-    margin-bottom: 20px;
-}
+    /* TEXTO */
+    #miniCalendar .fc-toolbar-title {
+        font-size: 14px !important;
+    }
 
+    /* BOTONES */
+    #miniCalendar .fc-button {
+        padding: 2px 6px !important;
+        font-size: 11px !important;
+    }
 
-.logo-text {
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-}
-.logo-img-small {
-    width: 40px;
-}
-.logo-img {
-    max-width: 120px !important;
-    width: 120px !important;
-    height: auto !important;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto 15px auto;
+/* STICKY */
+.sticky-calendar {
+    position: sticky;
+    top: 20px;
 }

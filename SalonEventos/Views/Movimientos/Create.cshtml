@@ -1,35 +1,104 @@
 @model SalonEventos.Models.Movimiento
 
-<h2>Nuevo Movimiento</h2>
+<h2 class="page-title">💰 Nuevo Movimiento</h2>
 
-<form asp-action="Create" method="post">
+<div class="card">
+    <div class="card-body">
 
-    <!-- 🔥 ESTO ES CLAVE -->
-    <input type="hidden" asp-for="EventoId" />
+        <!-- 🔥 ERRORES GENERALES -->
+        <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="mb-3">
-        <label>Tipo</label>
-        <select asp-for="Tipo" class="form-control">
-            <option value="Ingreso">Ingreso</option>
-            <option value="Gasto">Gasto</option>
-        </select>
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="EventoId" />
+
+            <!-- TIPO -->
+            <div class="mb-3">
+                <label asp-for="Tipo"></label>
+                <select asp-for="Tipo" class="form-control" id="tipo">
+                    <option value="Ingreso">Ingreso</option>
+                    <option value="Gasto">Gasto</option>
+                </select>
+            </div>
+
+            <!-- MONTO -->
+            <div class="mb-3">
+                <label asp-for="Monto"></label>
+                <input asp-for="Monto" class="form-control" id="monto" />
+                <span asp-validation-for="Monto" class="text-danger"></span>
+
+                <!-- 🔥 ERROR EN VIVO -->
+                <small id="errorMonto" class="text-danger"></small>
+            </div>
+
+            <!-- FECHA -->
+            <div class="mb-3">
+                <label asp-for="Fecha"></label>
+                <input asp-for="Fecha" type="date" class="form-control" />
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <div class="mb-3">
+                <label asp-for="Descripcion"></label>
+                <input asp-for="Descripcion" class="form-control"
+                       placeholder="Ej: Seña, pago final, gasto en decoración..." />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+
+            <!-- RESTANTE -->
+            <div class="mb-3">
+                <label>Falta pagar</label>
+                <input type="text" id="restante" class="form-control" readonly />
+            </div>
+
+            <button type="submit" class="btn btn-success" id="btnGuardar">Guardar</button>
+            <a href="/Eventos" class="btn btn-outline-dark">Volver</a>
+
+        </form>
+
     </div>
+</div>
 
-    <div class="mb-3">
-        <label>Monto</label>
-        <input asp-for="Monto" class="form-control" />
-    </div>
+@section Scripts {
 
-    <div class="mb-3">
-        <label>Fecha</label>
-        <input asp-for="Fecha" type="date" class="form-control" />
-    </div>
+    <script>
+        const montoTotal = @ViewBag.MontoTotal;
+        const seniaActual = @ViewBag.SeniaActual;
 
-    <div class="mb-3">
-        <label>Descripción</label>
-        <input asp-for="Descripcion" class="form-control" />
-    </div>
+        function validar() {
+            var monto = parseFloat(document.getElementById("monto").value) || 0;
+            var tipo = document.getElementById("tipo").value;
 
-    <button type="submit" class="btn btn-primary">Guardar</button>
+            var error = document.getElementById("errorMonto");
+            var btn = document.getElementById("btnGuardar");
 
-</form>
+            var nuevaSenia = seniaActual;
+
+            if (tipo === "Ingreso") {
+                nuevaSenia += monto;
+            }
+
+            var restante = montoTotal - nuevaSenia;
+            document.getElementById("restante").value = restante;
+
+            if (tipo === "Ingreso" && nuevaSenia > montoTotal) {
+                error.innerText = "El ingreso supera el monto total del evento";
+                btn.disabled = true;
+            } else if (monto <= 0) {
+                error.innerText = "Ingrese un monto válido";
+                btn.disabled = true;
+            } else {
+                error.innerText = "";
+                btn.disabled = false;
+            }
+        }
+
+        document.getElementById("monto").addEventListener("input", validar);
+        document.getElementById("tipo").addEventListener("change", validar);
+
+        validar();
+    </script>
+
+    <partial name="_ValidationScriptsPartial" />
+}

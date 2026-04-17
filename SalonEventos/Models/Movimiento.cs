@@ -1,5 +1,5 @@
-﻿
-using System;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SalonEventos.Models
 {
@@ -16,6 +16,8 @@ namespace SalonEventos.Models
         public string? Descripcion { get; set; }
 
         public int EventoId { get; set; }
-        public Evento Evento { get; set; }
+
+       
+        public Evento? Evento { get; set; }
     }
 }

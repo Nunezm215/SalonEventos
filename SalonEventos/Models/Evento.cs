@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace SalonEventos.Models
 {
@@ -22,7 +22,7 @@ namespace SalonEventos.Models
 
         public decimal Senia { get; set; }
 
-        public decimal SaldoPendiente { get; set; }
+        public decimal MontoRestante { get; set; }
 
         public string Estado { get; set; } = "Reservado";
 

@@ -151,7 +151,7 @@ namespace SalonEventos.Controllers
                 else if (estado == "Señado")
                 {
                     ingresos += evento.Senia;
-                    porCobrar += evento.SaldoPendiente;
+                    porCobrar += evento.MontoRestante;
                 }
                 else
                 {

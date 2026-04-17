@@ -1,9 +1,9 @@
-﻿
 @model IEnumerable<SalonEventos.Models.Evento>
+@using SalonEventos.Models
 
 <h2 class="page-title">📅 Calendario de Eventos</h2>
 
-<div id="calendar"></div>
+<div id="calendar" class="calendar"></div>
 
 <!-- MODAL -->
 <div id="modalEventos" class="modal-custom">
@@ -30,11 +30,10 @@
                 <strong>@e.NombreCliente</strong><br />
                 📅 @e.Fecha.ToShortDateString()<br />
                 🕒 @e.Hora<br />
-                💰 Saldo: $@e.SaldoPendiente<br />
+                💰 Saldo: $@e.MontoRestante<br />
                 📌 Estado: @e.Estado
 
-                <!-- 🔥 MOVIMIENTOS -->
-             
+                <!-- MOVIMIENTOS -->
                 <div class="mt-2">
                     <strong>Movimientos:</strong>
 
@@ -44,12 +43,10 @@
                         {
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-left:10px; font-size:14px;">
 
-                                <!-- TEXTO -->
                                 <div>
                                     ➤ @m.Tipo - $@m.Monto (@m.Fecha.ToShortDateString())
                                 </div>
 
-                                <!-- 🔥 BOTÓN PDF -->
                                 <a href="/Movimientos/Comprobante/@m.Id" class="btn btn-sm btn-outline-light">
                                     📄
                                 </a>
@@ -62,10 +59,8 @@
                         <div style="margin-left:10px;">Sin movimientos</div>
                     }
                 </div>
-              
 
-
-                <!-- 🔥 BOTONES -->
+                <!-- BOTONES -->
                 <div class="mt-3 d-flex gap-2 flex-wrap">
 
                     <a href="/Eventos/DescargarPdf/@e.Id" class="btn btn-warning">
@@ -75,6 +70,20 @@
                     <a href="/Movimientos/Create?eventoId=@e.Id" class="btn btn-primary">
                         💰 Realizar movimiento
                     </a>
+                    <a href="/Eventos/Edit/@e.Id" class="btn btn-info">
+                        ✏️ Editar
+                    </a>
+                    <!-- 🔥 BOTÓN ELIMINAR -->
+                    <form asp-controller="Eventos" asp-action="Delete" asp-route-id="@e.Id"
+                          method="post"
+                          onsubmit="return confirm('¿Seguro que querés eliminar este evento?');">
+
+                        <button type="submit" class="btn btn-danger">
+                            🗑 Eliminar
+                        </button>
+
+                    </form>
+
 
                 </div>
 
@@ -85,57 +94,56 @@
 
 @section Scripts {
 
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
 
-    var eventos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-        Model.Select(e => new
-        {
-            title = e.NombreCliente,
-            start = e.Fecha.ToString("yyyy-MM-dd"),
-            hora = e.Hora.ToString()
-        })
-    ));
+        var eventos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                    Model.Cast<Evento>().Select(e => new
+                    {
+                        title = e.NombreCliente,
+                        start = e.Fecha.ToString("yyyy-MM-dd"),
+                        hora = e.Hora.ToString()
+                    })
+                ));
 
-    var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         initialView: 'dayGridMonth',
         locale: 'es',
         selectable: true,
         events: eventos,
 
-        dateClick: function(info) {
+        dateClick: function (info) {
 
-            var fecha = info.dateStr;
-            var eventosDelDia = eventos.filter(e => e.start === fecha);
+        var fecha = info.dateStr;
+        var eventosDelDia = eventos.filter(e => e.start === fecha);
 
-            var html = "<h5>Eventos del " + fecha + "</h5>";
+        var html = "<h5>Eventos del " + fecha + "</h5>";
 
-            if (eventosDelDia.length === 0) {
-                html += "<p>No hay eventos</p>";
-            } else {
-                eventosDelDia.forEach(e => {
-                    html += `
-                        <div class="card p-2 mb-2">
-                            <strong>${e.title}</strong><br/>
-                            🕒 ${e.hora}
-                        </div>`;
-                });
-            }
-
-            document.getElementById("contenidoModal").innerHTML = html;
-            document.getElementById("modalEventos").style.display = "flex";
+        if (eventosDelDia.length === 0) {
+        html += "<p>No hay eventos</p>";
+        } else {
+        eventosDelDia.forEach(e => {
+        html += `
+        <div class="card p-2 mb-2">
+        <strong>${e.title}</strong><br/>
+        🕒 ${e.hora}
+        </div>`;
+        });
         }
-    });
 
-    calendar.render();
-});
+        document.getElementById("contenidoModal").innerHTML = html;
+        document.getElementById("modalEventos").style.display = "flex";
+        }
+        });
 
-function cerrarModal() {
-    document.getElementById("modalEventos").style.display = "none";
-}
-</script>
+        calendar.render();
+        });
+
+        function cerrarModal() {
+        document.getElementById("modalEventos").style.display = "none";
+        }
+    </script>
 
 }
