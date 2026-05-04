@@ -44,3 +44,4 @@ namespace SalonEventos.Migrations
         }
     }
 }
+

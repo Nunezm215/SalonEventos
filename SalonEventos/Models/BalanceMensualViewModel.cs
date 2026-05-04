@@ -11,3 +11,4 @@ namespace SalonEventos.Models
         public List<ReporteMensual> ReportesRecientes { get; set; } = new();
     }
 }
+

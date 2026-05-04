@@ -15,3 +15,4 @@ namespace SalonEventos.Data
         public DbSet<ReporteMensual> ReportesMensuales { get; set; }
     }
 }
+
